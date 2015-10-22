@@ -12,8 +12,9 @@ The University of Texas At Austin's [Common Data Set (2013-14)](https://www.utex
 
 Read the chuck in as a CSV
 ```{r Read from Google Sheet}
-url = "https://docs.google.com/spreadsheets/d/1pSZYzFwg87oY8lNInPJNQbQtIovGnNm_Itz_PxUYSoc/export?format=csv"
-demographics <- read.csv(file = url)
+# url = "https://docs.google.com/spreadsheets/d/1pSZYzFwg87oY8lNInPJNQbQtIovGnNm_Itz_PxUYSoc/export?format=csv"
+# demographics <- read.csv(file = url)
+demographics <- read.csv("~/Google Drive/100 - Publicly hosted/rootR/utexas/diveristy/demographics.csv")
 summary(demographics)
 ```
 
