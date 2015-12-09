@@ -23,6 +23,7 @@ knitr::opts_chunk$set(fig.width=12, fig.height=8, fig.path='Figures/',
 sapply(c("magrittr", "dplyr", "reshape2", "ggplot2", "RCurl"), require, character.only=TRUE)  
 
 source("~/Github/Citations/Citation Function.R")
+source("~/Github/utexas/diveristy/theme_UT.R")
 ```
 
 
@@ -51,24 +52,9 @@ df <- Colleges %>% group_by(College) %>% mutate(percent = students/sum(students)
 ```
 
 ```{r}
-qplot(data=df, x=percent, fill=sex, geom="density") + facet_wrap("College")
-qplot(data=df, x=percent, fill=College) + facet_grid(Race ~ sex)
-qplot(data=df, x=Race)
-
-df %>% 
-  ggvis(~students, ~percent, fill = ~factor(Race)) %>% 
-  layer_points(
-    fill := input_checkboxgroup(
-      choices = c("Red" = "r", "Green" = "g", "Blue" = "b"),
-      label = "Point color components",
-      map = function(val) {
-        rgb(0.8 * "r" %in% val, 0.8 * "g" %in% val, 0.8 * "b" %in% val)
-      }
-    )
-  )
-  layer_points() %>%
-  group_by(Race) %>%
-  layer_points()
+qplot(data=df, x=percent, fill=sex, geom="density", alpha=I(0.5)) + facet_wrap("College") + theme_UT()
+# qplot(data=df, x=percent, fill=College) + facet_grid(Race ~ sex) + theme_UT()
+qplot(data=df, x=Race, y=College, geom="tile", fill=percent) + theme_UT() + theme(axis.text.x = element_text(angle = 90))
 ```
 Now, let's find out what it would look like if UT was proportional to the state demographics (roughly). To do this, we need to calculate the percentage of each race `State.Percent`
 
@@ -98,36 +84,34 @@ Texas$UT.by.PercentState <- UT.by.PercentState
 
 ***
 
-```{r}
-
-  group_by(College) %>%
-  mutate(Percent.Male = Men/(Men+Women), Percent.Female = Women/(Men+Women)) %>%
-  ungroup() %>%
-  ggplot(aes(x=College)) + geom_bar(aes(y=Percent.Male))
-  qplot(data=Colleges, x=Men, y=Women, color=College, shape=Race)
-```
-
-
-
-***
-### Plot
-
 ```{r PlotStats}
 require(ggplot2)
 require(ggthemes)
 
-ggplot(Texas, aes(x=Race)) + 
+fig <- ggplot(Texas, aes(x=Race)) + 
   geom_bar(aes(y=UT.by.PercentState/1000), 
            stat = "identity", alpha=I(.8), fill=I("black")) + 
   geom_bar(aes(y=Utexas/1000), 
-           stat = "identity", alpha=I(.3), fill=I("green"), color=I("#BF5700")) + 
+           stat = "identity", alpha=I(.3), fill=I("#BF5700"), color=I("#BF5700")) + 
   labs(y="Number of students at UT", 
        title="Representation of UT Students \nvs Texas Population by race") +
-  theme_economist_white() + coord_flip() 
-  
+  theme_economist_white() + coord_flip() + theme_UT()
+
+gridExtra::grid.arrange(fig, 
+  grid::textGrob(
+"Black bars represent the number of students UT would\nhave if it were representative of the state's population.
+The burnt orange bars represent the actual number of students at UT\n\n
+The portions of the bars that are black equate to over representation, 
+while the light burnt orange equates to underrepresntation"))
+                 
 citation()
 
 ```
+
+Black bars represent the number of students UT would\nhave if it were representative of the state's population.
+The burnt orange bars represent the actual number of students at UT\n\n
+The portions of the bars that are black equate to over representation, 
+while the light burnt orange equates to underrepresntation
 
 ***
 # Contact
